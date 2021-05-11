@@ -5,6 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            //!Lembrar de chamar o chrome com:
+            //google-chrome --remote-debugging-port=9222&
+            //!Lembrar de subir o serviço com:
+            //npm start
+            "name": "Attach to Chrome",
+            "request": "attach",
+            "port": 9222,
+            "type": "pwa-chrome",
+            "webRoot": "${workspaceFolder}/lab06/backend/build",
+            "urlFilter": "http://localhost:3001/*"
+        },
+        {
+            "type": "firefox",
+            "request": "attach",
+            "name": "Front-Firefox",
+            "url": "http://localhost:3001/",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
             "type": "pwa-node",
             "request": "launch",
             "name": "DW-Project-Vagoamin",

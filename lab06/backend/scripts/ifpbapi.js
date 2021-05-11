@@ -4,20 +4,43 @@ class FSUtils {
 	static #fs = require("fs");
 	static #path = require("path");
 
-	static getFS(){
+	static getFS() {
 		return this.#fs;
 	}
 
-	static getPath(){
+	static getPath() {
 		return this.#path;
 	}
 
 	static isReadble(path) {
-		return FSUtils.testFileAccess(path, this.#fs.constants.R_OK);
+		let stf = this.#fs.lstatSync(path);
+		if (stf ?? false) {
+			return (
+				stf.isFile() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
+				FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
+			);
+		} else {
+			return false;
+		}
+	}
+
+	static isListble(path) {
+		let stf = this.#fs.lstatSync(path);
+		if (stf ?? false) {
+			return (
+				stf.isDirectory() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
+				FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
+			);
+		} else {
+			return false;
+		}
 	}
 
 	static isWriteble(path) {
-		return FSUtils.testFileAccess(path, this.#fs.constants.R_OK | this.#fs.constants.W_OK);
+		return FSUtils.testFileAccess(
+			path,
+			this.#fs.constants.R_OK | this.#fs.constants.W_OK
+		);
 	}
 
 	static testFileAccess(path, access) {
@@ -30,6 +53,10 @@ class FSUtils {
 			}
 		};
 		return fileAccess(path, access);
+	}
+
+	static Exists(path) {
+		return this.#fs.statSync(path) != null ?? false; //consegue identificar ser uma entrada
 	}
 
 	static isFile(path) {
@@ -47,7 +74,12 @@ class FSUtils {
 
 	static isDirectory(path) {
 		try {
-			return !this.#fs.statSync(path).isFile();
+			let st = this.#fs.lstatSync(path);
+			if (st ?? false) {
+				return st.isDirectory();
+			} else {
+				return false;
+			}
 		} catch (error) {
 			return false;
 		}
@@ -57,7 +89,7 @@ class FSUtils {
 		return this.#path.normalize(path.replace('/^"(.*)"$/', "$1")); //elimina aspas nos extremos - alternativa a splice(1,-1) por segurança
 	}
 
-	static relative2Absolute( path ){
+	static relative2Absolute(path) {
 		return this.#path.resolve(process.cwd(), p);
 	}
 }
@@ -79,27 +111,34 @@ class DWAPI {
 
 	getFileContent() {
 		if (null != this.input) {
-			const target = FSUtils.normalizePath( this.input.input );
-			if( FSUtils.isDirectory( target )){
-				const fs = FSUtils.getFS();
-				const path = FSUtils.getPath();
-				var ret = [];
-				fs.readdirSync(target).forEach((file) => {  //todo aprender a criar callbacks e remover agregação de FS
-					var statFile = fs.statSync(path.join(target, file));
-					if( statFile.isFile() ){
-						ret.push( `FILE: ${path.join(target, file)}\n` );
-					}else{
-						ret.push( `DIR : ${path.join(target, file).padEnd(80, '.')}${statFile.size}\n`);
-					}
-				});
-				return ret;
-			}else{
-				if( FSUtils.isReadble( target ) ){
-					return FSUtils.getFileContent( target );
-				}else{
-					return `Arquivo: ${target} não pode ser lido!!!`
+			const target = FSUtils.normalizePath(this.input.input);
+			if (FSUtils.isDirectory(target)) {
+				if (FSUtils.isListble(target)) {
+					const fs = FSUtils.getFS();
+					const path = FSUtils.getPath();
+					var ret = "";
+					fs.readdirSync(target).forEach((file) => {
+						//todo aprender a criar callbacks e remover agregação de FS
+						var statFile = fs.statSync(path.join(target, file));
+						if (statFile.isFile()) {
+							ret += `FILE: ${path
+								.join(target, file)
+								.padEnd(80, ".")} tamanho: ${statFile.size}\n`;
+						} else {
+							ret += `DIR : ${path.join(target, file)}\n`;
+						}
+					});
+					return ret;
+				} else {
+					return `Diretório ${target} não pode ser lido.`;
 				}
-			}			
+			} else {
+				if (FSUtils.isReadble(target)) {
+					return FSUtils.getFileContent(target);
+				} else {
+					return `Arquivo: ${target} não pode ser lido!!!`;
+				}
+			}
 		}
 	}
 
