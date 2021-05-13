@@ -13,13 +13,17 @@ class FSUtils {
 	}
 
 	static isReadble(path) {
-		let stf = this.#fs.lstatSync(path);
-		if (stf ?? false) {
-			return (
-				stf.isFile() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
-				FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
-			);
-		} else {
+		try {
+			let stf = this.#fs.lstatSync(path);
+			if (stf ?? false) {
+				return (
+					stf.isFile() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
+					FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
+				);
+			} else {
+				return false;
+			}				
+		} catch (error) {
 			return false;
 		}
 	}

@@ -20,6 +20,7 @@
             "type": "firefox",
             "request": "attach",
             "name": "Front-Firefox",
+            "port": 6000,
             "url": "http://localhost:3001/",
             "webRoot": "${workspaceFolder}"
         },
