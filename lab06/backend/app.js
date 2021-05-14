@@ -14,7 +14,7 @@ const http = require("http");
 const app = express();
 
 app.use(logger("dev"));
-app.use(express.json());
+app.use(express.json()); //HACK essencial para maniupular dados no body do http
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve(__dirname, "build")));
@@ -29,6 +29,16 @@ app.get("/file", async (req, res) => {
 	res.status = 200;
 	res.json(ret);
 });
+
+
+app.get("/exec", async (req, res) => {
+	console.log(req.url);
+	const api = new DWAPI(req.path, req.query);
+	const ret = api.execCommand();
+	res.status = 200;
+	res.json(ret);
+});
+
 
 app.put("/setfile", async (req, res) => {
 	let body = [];
@@ -46,10 +56,24 @@ app.put("/setfile", async (req, res) => {
 			//todo tratamento do erro
 			console.error(err);
 		});
+	if( body.length == 0 ){
+		body = req.body;
+	}
+	const api = new DWAPI(req.path, req.query);
+	const ret = api.setFileContent( body['content'] );
+	res.status = 200;
+	res.json(ret);
 });
 
-app.get("/", (req, res) => {
-	res.sendFile("build/index.html", { root: __dirname });
+app.get("/*", (req, res) => {
+	console.log(req.url);
+	if (req.url.endsWith("/") || req.url.endsWith("index.html")) {
+		res.sendFile("build/index.html", { root: __dirname });
+	} else {
+		if (req.url.endsWith("favicon.ico")) {
+			res.sendFile("build/favicon.ico", { root: __dirname });
+		}
+	}
 });
 
 app.get("/scripts/*", (req, res) => {
@@ -62,6 +86,13 @@ app.get("/scripts/*", (req, res) => {
 app.use((req, res, next) => {
 	next(createError(404));
 });
+
+app.use((req, res, next) =>{
+	console.log( `Recurso: ${req.url}`);
+	next( req, res );
+});
+
+
 
 // TODO Web Template Studio: Add your own error handler here.
 if (process.env.NODE_ENV === "production") {

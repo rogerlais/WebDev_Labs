@@ -113,6 +113,34 @@ class DWAPI {
 		this.result = null;
 	}
 
+	execCommand(){
+		if( this.input ?? false ){
+			const fs = FSUtils.getFS();
+			try {
+				fs.writeFileSync( this.input.input, content );	
+				return `Arquivo ${this.input.input} salvo com sucesso!`;
+			} catch (error) {
+				return `Falha salvando arquivo ${this.input}\n${error}`	
+			}			
+		}else{
+			throw "Caminho de destino não especificado."
+		}
+	}
+
+	setFileContent( content ){
+		if( this.input ?? false ){
+			const fs = FSUtils.getFS();
+			try {
+				fs.writeFileSync( this.input.input, content );	
+				return `Arquivo ${this.input.input} salvo com sucesso!`;
+			} catch (error) {
+				return `Falha salvando arquivo ${this.input}\n${error}`	
+			}			
+		}else{
+			throw "Caminho de destino não especificado."
+		}
+	}
+
 	getFileContent() {
 		if (null != this.input) {
 			const target = FSUtils.normalizePath(this.input.input);
