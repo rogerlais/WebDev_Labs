@@ -22,7 +22,7 @@ class FSUtils {
 				);
 			} else {
 				return false;
-			}				
+			}
 		} catch (error) {
 			return false;
 		}
@@ -113,31 +113,91 @@ class DWAPI {
 		this.result = null;
 	}
 
-	execCommand(){
-		if( this.input ?? false ){
-			const fs = FSUtils.getFS();
-			try {
-				fs.writeFileSync( this.input.input, content );	
-				return `Arquivo ${this.input.input} salvo com sucesso!`;
-			} catch (error) {
-				return `Falha salvando arquivo ${this.input}\n${error}`	
-			}			
-		}else{
-			throw "Caminho de destino não especificado."
+	async run(cmd) {
+		const { exec } = require("child_process");
+		var msg = "";
+		try {
+			/*
+			const proc = exec(cmd, (error, stdout, stderr) => {
+				if (error) {
+					msg = `error: ${error.message}`;
+					console.error(msg);
+					return msg;
+				}
+				if (stderr) {
+					msg = `stderr: ${stderr}`;
+					console.error(msg);
+					return msg;
+				}
+				msg = `stdout:\n${stdout}`;
+				console.log(msg);
+				return msg;
+			});				
+			*/
+			const proc = exec(cmd);
+			proc.on("close", (close) => {
+				if (close == 0) {
+					return proc.stdout.toString();
+				}
+			});
+		} catch (error) {
+			return `Erro fatal: ${error}`;
 		}
 	}
 
-	setFileContent( content ){
-		if( this.input ?? false ){
+	async run2(cmd) {
+		const util = require("util");
+		const { exec } = require("child_process");
+		const execProm = util.promisify(exec);
+		async function run_shell_command(command) {
+			let processProm;
+			try {
+				processProm = await execProm(cmd);
+			} catch (ex) {
+				processProm = ex;
+			}
+			if (Error[Symbol.hasInstance](processProm)) return;
+			return processProm;
+		}
+		const ret = run_shell_command("ls").then((process) => {
+			console.log(process);
+			return process.stdout.toLocaleString();
+		});
+		return ret;
+	}
+
+	execCommand() {
+		if (this.input.input ?? false) {
+			//const ret = this.run(this.input.input);
+			const ret = this.run2(this.input.input);
+			ret.then( 
+				
+			)
+			return ret;
+			/*
+			const util = require("util");
+			const exec = util.promisify(require("child_process").exec);
+			async function raw() {
+				const { stdout } = await exec(this.input.input);
+				return stdout;
+			}
+			*/
+		} else {
+			throw "Comando a ser executado não especificado.";
+		}
+	}
+
+	setFileContent(content) {
+		if (this.input.input ?? false) {
 			const fs = FSUtils.getFS();
 			try {
-				fs.writeFileSync( this.input.input, content );	
+				fs.writeFileSync(this.input.input, content);
 				return `Arquivo ${this.input.input} salvo com sucesso!`;
 			} catch (error) {
-				return `Falha salvando arquivo ${this.input}\n${error}`	
-			}			
-		}else{
-			throw "Caminho de destino não especificado."
+				return `Falha salvando arquivo ${this.input}\n${error}`;
+			}
+		} else {
+			throw "Caminho de destino não especificado.";
 		}
 	}
 

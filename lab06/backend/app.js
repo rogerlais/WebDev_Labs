@@ -25,20 +25,28 @@ app.use("/api", indexRouter);
 app.get("/file", async (req, res) => {
 	console.log(req.url);
 	const api = new DWAPI(req.path, req.query);
-	const ret = api.getFileContent();
-	res.status = 200;
-	res.json(ret);
+	try {
+		const ret = api.getFileContent();
+		res.status = 200;
+		res.json(ret);
+	} catch (error) {
+		res.json(error);
+		res.sendStatus(500);
+	}
 });
-
 
 app.get("/exec", async (req, res) => {
 	console.log(req.url);
 	const api = new DWAPI(req.path, req.query);
-	const ret = api.execCommand();
-	res.status = 200;
-	res.json(ret);
+	try {
+		const ret = api.execCommand();
+		res.status = 200;
+		res.json(ret);
+	} catch (error) {
+		res.status = 500;
+		res.json(error);
+	}
 });
-
 
 app.put("/setfile", async (req, res) => {
 	let body = [];
@@ -56,11 +64,11 @@ app.put("/setfile", async (req, res) => {
 			//todo tratamento do erro
 			console.error(err);
 		});
-	if( body.length == 0 ){
+	if (body.length == 0) {
 		body = req.body;
 	}
 	const api = new DWAPI(req.path, req.query);
-	const ret = api.setFileContent( body['content'] );
+	const ret = api.setFileContent(body["content"]);
 	res.status = 200;
 	res.json(ret);
 });
@@ -87,12 +95,10 @@ app.use((req, res, next) => {
 	next(createError(404));
 });
 
-app.use((req, res, next) =>{
-	console.log( `Recurso: ${req.url}`);
-	next( req, res );
+app.use((req, res, next) => {
+	console.log(`Recurso: ${req.url}`);
+	next(req, res);
 });
-
-
 
 // TODO Web Template Studio: Add your own error handler here.
 if (process.env.NODE_ENV === "production") {
