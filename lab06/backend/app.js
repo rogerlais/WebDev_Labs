@@ -7,7 +7,9 @@ const logger = require("morgan");
 const ifpbapi = require("./scripts/ifpbapi");
 //var api = new ifpbapi();
 
-const indexRouter = require("./routes/index");
+//todo removido por simplicidade
+//const indexRouter = require("./routes/index");
+
 const { APIResult, DWAPI } = require("./scripts/ifpbapi");
 const http = require("http");
 
@@ -19,7 +21,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.resolve(__dirname, "build")));
 
-app.use("/api", indexRouter);
+//todo removido por simplicidade
+//app.use("/api", indexRouter);
 
 //!entrega 6 - item 1
 app.get("/file", async (req, res) => {
@@ -39,7 +42,7 @@ app.get("/exec", async (req, res) => {
 	console.log(req.url);
 	const api = new DWAPI(req.path, req.query);
 	try {
-		const ret = api.execCommand();
+		const ret = await api.execCommand();
 		res.status = 200;
 		res.json(ret);
 	} catch (error) {
@@ -69,7 +72,7 @@ app.put("/setfile", async (req, res) => {
 	}
 	const api = new DWAPI(req.path, req.query);
 	const ret = api.setFileContent(body["content"]);
-	res.status = 200;
+	res.status = api.retCode;
 	res.json(ret);
 });
 
@@ -84,7 +87,7 @@ app.get("/*", (req, res) => {
 	}
 });
 
-app.get("/scripts/*", (req, res) => {
+app.get("/scripts", (req, res) => {
 	console.log("js carregado");
 	const jsFile = path.join("build", req.url);
 	res.sendFile(jsFile, { root: __dirname });
@@ -95,10 +98,14 @@ app.use((req, res, next) => {
 	next(createError(404));
 });
 
+
+//todo validar remoção abaixo
+/*
 app.use((req, res, next) => {
 	console.log(`Recurso: ${req.url}`);
 	next(req, res);
 });
+*/
 
 // TODO Web Template Studio: Add your own error handler here.
 if (process.env.NODE_ENV === "production") {

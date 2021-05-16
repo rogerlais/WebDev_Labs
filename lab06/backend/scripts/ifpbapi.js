@@ -1,5 +1,8 @@
-const path = require("path");
-
+function isValid(obj) {
+	//Devido a uso de node < 14, foi criada esta rotina que poderia ser inline com o coalescing operator
+	//todo update after node 12 to (obj ?? false) abaixo
+	return !(null === obj || undefined === obj);
+}
 class FSUtils {
 	static #fs = require("fs");
 	static #path = require("path");
@@ -14,10 +17,10 @@ class FSUtils {
 
 	static isReadble(path) {
 		try {
-			let stf = this.#fs.lstatSync(path);
-			if (stf ?? false) {
+			let st = this.#fs.lstatSync(path);
+			if (isValid(st)) {
 				return (
-					stf.isFile() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
+					st.isFile() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
 					FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
 				);
 			} else {
@@ -29,10 +32,10 @@ class FSUtils {
 	}
 
 	static isListble(path) {
-		let stf = this.#fs.lstatSync(path);
-		if (stf ?? false) {
+		let st = this.#fs.lstatSync(path);
+		if (isValid(st)) {
 			return (
-				stf.isDirectory() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
+				st.isDirectory() && //HACK Podemos ter tipos de entradas diversas agora file & dir(sockect/link/etc)
 				FSUtils.testFileAccess(path, this.#fs.constants.R_OK)
 			);
 		} else {
@@ -60,7 +63,7 @@ class FSUtils {
 	}
 
 	static Exists(path) {
-		return this.#fs.statSync(path) != null ?? false; //consegue identificar ser uma entrada
+		return isValid(this.#fs.statSync(path)); //consegue identificar ser uma entrada
 	}
 
 	static isFile(path) {
@@ -79,7 +82,7 @@ class FSUtils {
 	static isDirectory(path) {
 		try {
 			let st = this.#fs.lstatSync(path);
-			if (st ?? false) {
+			if (isValid(st)) {
 				return st.isDirectory();
 			} else {
 				return false;
@@ -111,90 +114,38 @@ class DWAPI {
 		this.action = action;
 		this.input = input;
 		this.result = null;
+		this.retCode = 200;
 	}
 
-	async run(cmd) {
-		const { exec } = require("child_process");
-		var msg = "";
-		try {
-			/*
-			const proc = exec(cmd, (error, stdout, stderr) => {
-				if (error) {
-					msg = `error: ${error.message}`;
-					console.error(msg);
-					return msg;
-				}
-				if (stderr) {
-					msg = `stderr: ${stderr}`;
-					console.error(msg);
-					return msg;
-				}
-				msg = `stdout:\n${stdout}`;
-				console.log(msg);
-				return msg;
-			});				
-			*/
-			const proc = exec(cmd);
-			proc.on("close", (close) => {
-				if (close == 0) {
-					return proc.stdout.toString();
-				}
-			});
-		} catch (error) {
-			return `Erro fatal: ${error}`;
-		}
-	}
-
-	async run2(cmd) {
+	async runExternal(cmd) {
 		const util = require("util");
-		const { exec } = require("child_process");
-		const execProm = util.promisify(exec);
-		async function run_shell_command(command) {
-			let processProm;
-			try {
-				processProm = await execProm(cmd);
-			} catch (ex) {
-				processProm = ex;
-			}
-			if (Error[Symbol.hasInstance](processProm)) return;
-			return processProm;
+		const exec = util.promisify(require("child_process").exec);
+		async function raw(cmdX) {
+			const { stdout } = await exec(cmdX);
+			return stdout;
 		}
-		const ret = run_shell_command("ls").then((process) => {
-			console.log(process);
-			return process.stdout.toLocaleString();
-		});
-		return ret;
+		return await raw(cmd);
 	}
 
-	execCommand() {
-		if (this.input.input ?? false) {
-			//const ret = this.run(this.input.input);
-			const ret = this.run2(this.input.input);
-			ret.then( 
-				
-			)
+	async execCommand() {
+		if (isValid(this.input.input)) {
+			const ret = this.runExternal(this.input.input);
 			return ret;
-			/*
-			const util = require("util");
-			const exec = util.promisify(require("child_process").exec);
-			async function raw() {
-				const { stdout } = await exec(this.input.input);
-				return stdout;
-			}
-			*/
 		} else {
 			throw "Comando a ser executado não especificado.";
 		}
 	}
 
 	setFileContent(content) {
-		if (this.input.input ?? false) {
+		if (isValid(this.input.input)) {
 			const fs = FSUtils.getFS();
 			try {
 				fs.writeFileSync(this.input.input, content);
 				return `Arquivo ${this.input.input} salvo com sucesso!`;
 			} catch (error) {
-				return `Falha salvando arquivo ${this.input}\n${error}`;
+				this.retCode = 409; //conflito
+				this.result = `Falha salvando arquivo ${this.input.input}\n${error}`;
+				return this.result;
 			}
 		} else {
 			throw "Caminho de destino não especificado.";
