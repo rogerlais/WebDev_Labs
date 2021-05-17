@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <title>Autenticaçao</title>
+</head>
+
+<body>
+    <div>
+        <h1><center>Autenticaçao</center></h1>
+        <!--Vetores operaçoes-->
+        <h2><br>1. Operação com vetor<br></h2>
+        <input type="radio" id="sumArray" name="radioOperation" value="sumArray" checked>
+        <label for="sumArray">Somar vetor</label>
+        <br>
+        <input type="radio" id="sumArray" name="radioOperation" value="sumOddsArray">
+        <label for="sumOddsArray">Somar elementos ímpares do vetor</label>
+        <br>
+        <input type="radio" id="sumArray" name="radioOperation" value="prodArray">
+        <label for="sumArray">Produtório do vetor</label>
+        <br>
+        <label for="arrayValues">Valores separados por espaços:</label>
+        <input type="text" name="arrayValues" id="arrayValues" minlength="4" placeholder="n1 n2 n3..."> </input>
+        <input type="button" id="invokeOper" value="calcule">
+        <br>
+        <label for="resultArrayOperation">Resultado:</label>
+        <input type="text" name="resultArrayOperation" id="resultArrayOperation" value="0" style="text-align:center;"  readonly>
+
+        <!--Gerador de lista-->
+        <h2><br>2. Gerador de lista<br></h2>
+        <input type="text" name="labelControl" id="labelControl" minlength="4" placeholder="rotulo"> </input>
+        <input type="number" name="repeatLabelCount" id="repeatLabelCount" value="1">
+        <input type="button" id="listGenButton" value="Gerar Lista">
+        <div><ul id="dynList"></ul></div>
+
+        <h2><br>3. Estrutura de dados(objeto)<br></h2>
+        <input type="button" id="objListGenButton" value="Gerar Lista de objetos">
+        <div id="outObjList"></div>
+
+
+    </div>
+    <div>
+        <br><br>
+        <h1><center>Entregas 4</center></h1>
+        <center>
+            <div>
+                <h2>Calculo do IMC</h2>
+                <label for="height">Altura(cm):</label>
+                <input type="number" name="height" id="height" placeholder="000 cm"> </input>
+                <label for="weight">Peso(Kg):</label>
+                <input type="number" name="weight" id="weight" placeholder="0.1 Kg" step="0.1"> </input>
+                <br>
+                <input type="radio" id="male" name="gender" value="male">
+                <label for="male">Masculino</label>
+                <input type="radio" id="female" name="gender" value="male">
+                <label for="male">Feminino</label>
+                <div>
+                    <br>
+                    <label for="condition">Condiçao:</label>
+                    <input type="text" name="condition" id="condition" size=30 style="text-align:center;" readonly> </input>                
+                    <br>
+                </div>
+                <br>
+                <input type="button" id="calcIMCCondition" value="Verificando o IMC">
+
+            </div>
+        </center>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script type="application/javascript" src="./scripts/entrega03.js"></script>
+
+    <script>
+        bindControls( document );
+    </script>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js " integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0 " crossorigin="anonymous ">
+        </script>
+</body>
+
+</html>
