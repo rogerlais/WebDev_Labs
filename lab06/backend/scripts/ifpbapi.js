@@ -179,7 +179,8 @@ class DWAPI {
 				if (FSUtils.isReadble(target)) {
 					return FSUtils.getFileContent(target);
 				} else {
-					return `Arquivo: ${target} não pode ser lido!!!`;
+					return `Usando caminho remoto = ${__dirname}
+O arquivo/Diretório: ${target} não pode ser lido!!!`;
 				}
 			}
 		}
