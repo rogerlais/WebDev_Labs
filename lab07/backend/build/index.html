@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt">
+	<head>
+		<!-- Required meta tags -->
+		<meta charset="utf-8" />
+		<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- http-equiv="Cache-Control" -->
+		<meta
+			content="no-cache, no-store, must-revalidate"
+		/>
+		<!-- evita cahce do live server no navegador-->
+		<!-- Bootstrap CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+			crossorigin="anonymous"
+		/>
+		<title>Entrega 7</title>
+	</head>
+
+	<body>
+		<div>
+			<h1>
+				<center>Entrega 7</center>
+			</h1>
+			<!--Files operations-->
+			<h2><br />1. Operação com arquivos do sistema<br /></h2>
+			<label for="targetPath">Caminho relativo do arquivo:</label>
+			<input
+				type="text"
+				name="targetPath"
+				id="targetPath"
+				minlength="4"
+				size="50"
+				placeholder="e.g ../../../../../etc/passwd - brecha de segurança de acesso a arquivos."
+			/>
+			<input
+				type="button"
+				id="invokeGetFileContent"
+				value="capture arquivo"
+			/>
+			<!--executar comando externo-->
+			<h2><br />2. Executar comando externo<br /></h2>
+			<label for="cmdText">Comando a ser executado:</label>
+			<input
+				type="text"
+				name="cmdText"
+				id="cmdText"
+				minlength="4"
+				placeholder="comando a executar"
+			/>
+			<input type="button" id="execButton" value="Executar comando" />
+			<br />
+			<label style="position: inherit" for="resultGetFileContent"
+				>Resultado:</label
+			>
+			<textarea
+				name="resultCmd"
+				id="resultCmd"
+				rows="10"
+				cols="30"
+				style="resize:both;"
+				placeholder="Resultado da operação"
+			></textarea>
+			<br />
+		</div>
+	<script type="application/javascript" src="/scripts/entrega07.js"></script>
+	<script>
+		bindControls(document);
+	</script>
+	</body>
+</html>

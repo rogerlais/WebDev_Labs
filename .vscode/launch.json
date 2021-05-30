@@ -13,7 +13,7 @@
             "request": "attach",
             "port": 9222,
             "type": "pwa-chrome",
-            "webRoot": "${workspaceFolder}/lab06/backend/build",
+            "webRoot": "${workspaceFolder}/lab07/backend/build",
             "urlFilter": "http://localhost:3001/*"
         },
         {
@@ -46,6 +46,18 @@
             "program": "${workspaceFolder}/lab06/backend/server.js",
             "outFiles": [
                 "${workspaceFolder}/lab06/**/*.js"
+            ]
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "DW-Lab07",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/lab07/backend/server.js",
+            "outFiles": [
+                "${workspaceFolder}/lab07/**/*.js"
             ]
         }
     ]
