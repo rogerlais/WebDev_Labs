@@ -24,7 +24,7 @@ app.use(express.static(path.resolve(__dirname, "build")));
 //todo removido por simplicidade
 //app.use("/api", indexRouter);
 
-//!entrega 6 - item 1
+//!entrega 7 - item 1
 app.get("/file", async (req, res) => {
 	console.log(req.url);
 	const api = new DWAPI(req.path, req.query);
@@ -78,13 +78,21 @@ app.put("/setfile", async (req, res) => {
 
 app.get("/*", (req, res) => {
 	console.log(req.url);
-	if (req.url.endsWith("/") || req.url.endsWith("index.html")) {
-		res.sendFile("build/index.html", { root: __dirname });
+	if (req.url === "/") {
+		res.redirect("/start");
 	} else {
-		if (req.url.endsWith("favicon.ico")) {
-			res.sendFile("build/favicon.ico", { root: __dirname });
+		if (req.url.endsWith("/") || req.url.endsWith("index.html")) {
+			res.sendFile("build/index.html", { root: __dirname });
+		} else {
+			if (req.url.endsWith("favicon.ico")) {
+				res.sendFile("build/favicon.ico", { root: __dirname });
+			}
 		}
 	}
+});
+
+app.get("/start", (req, res) => {
+	
 });
 
 app.get("/scripts", (req, res) => {
@@ -97,7 +105,6 @@ app.get("/scripts", (req, res) => {
 app.use((req, res, next) => {
 	next(createError(404));
 });
-
 
 //todo validar remoção abaixo
 /*
@@ -123,12 +130,11 @@ if (process.env.NODE_ENV === "production") {
 	});
 }
 
-
+console.log("Rotas presentes nesta aplicação:");
 app._router.stack.forEach(function (r) {
 	if (r.route && r.route.path) {
 		console.log(r.route.path);
 	}
 });
-
 
 module.exports = app;
